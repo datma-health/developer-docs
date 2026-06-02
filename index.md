@@ -6,9 +6,9 @@ Schema version: `0.1.0`.
 - [Feature Request](#feature-request)
 - [Feature Vector to DataFrame Workflow](#feature-vector-to-dataframe-workflow)
 - [Feature Vector Output Schema](#feature-vector-output-schema)
-- [Filter Options with Examples](#filter-options-with-examples)
+- [Criteria Filter Options with Examples](#criteria-filter-options-with-examples)
 - [Comparison Operators with Examples](#comparison-operators-with-examples)
-- [Composition Examples (AND / OR)](#composition-examples-and-or)
+- [Composition Examples (AND / OR)](#composition-examples)
 
 ## Cohort Request
 
@@ -18,11 +18,32 @@ Required fields:
 
 - `name` (string)
 - `schemaVersion` (string): `0.1.0`
-- `query` (`CriteriaFilter` or `CohortQuery`)
+- `query` (`CriteriaFilter` or `CohortQuery`) [more details on criteria filters below](#criteria-filter-options-with-examples)
 
 Optional fields:
 
-- `cohortQueryXid` (string): can be provided if you are saving and want to update the value associated with an existing xid.
+- `cohortQueryXid` (string): can be provided if you are saving and want to update the value associated with an existing xid. See [more details for saving cohorts](#check-saved-cohort-details-by-xid).
+
+---
+
+### `create_cohort` function documentation
+
+```
+create_cohort(
+  named_cohort: CohortQueryRequest,
+  include_ids: bool = False,
+  refresh: bool = False,
+  save: bool = False,
+)
+```
+
+Parameters:
+
+- `named_cohort`: cohort request payload (`CohortQueryRequest` or dict-like payload)
+- `include_ids`: include `patientIds` in the response when true
+- `save`: persist cohort result and return saved XIDs when true
+
+---
 
 Important note on saving cohorts:
 
@@ -116,6 +137,7 @@ Typical response fields you will use next:
 
 When `include_ids` is false, `patientIds` field will be omitted from response. When `save` is false, `cohortQuery*Xid` fields will not be saved.
 
+
 ### Check saved cohort details by XID
 
 Use the saved `cohortQueryResponseXid` to fetch cohort details, if needed. This is informational only, in general, this is not needed for an analysis flow.
@@ -130,10 +152,75 @@ cohort_details = cohort.get_cohort(xid=saved_xid, include_ids=False)
 print(cohort_details)
 ```
 
+From this, get the `cohortQueryXid` to pass in the `CohortQueryRequest` and update an already saved cohort:
+
+```
+cohort_query_xid = cohort_details[0].get('cohortQueryXid')
+# or cohort_request.cohortQueryXid = cohort_query_xid for python model
+cohort_request['cohortQueryXid'] = cohort_query_xid
+updated_cohort_details = cohort.create_cohort(cohort_request, save=True)
+print(updated_cohort_details)
+```
+
+---
+
+### `get_cohort` function documentation
+
+```
+get_cohort(
+  xid: str = None,
+  include_ids: bool = False,
+)
+```
+
+Parameters:
+
+- `xid`: cohort response XID to fetch a specific cohort; when `None`, returns all cohorts
+- `include_ids`: include `patientIds` in the response when true
+
+---
+
+
 ## Feature Request
 
-Feature requests should include one or more `CriteriaFilter` items in `features`.
-Below is a single-feature request body.
+Use a `FeatureVectorsRequest` to define and execute feature retrieval.
+
+Required fields:
+
+- `features` (array of `CriteriaFilter`): one or more feature filters to retrieve. [More details on criteria filters below](#criteria-filter-options-with-examples).
+
+Optional fields:
+
+- `cohortQueryResponseXid` (string): use a saved cohort response as the patient set
+- `patientIds` (array of string): explicit patient identifiers (alternative to `cohortQueryResponseXid`)
+
+Feature requests should include one `CriteriaFilter` item in `features`.
+
+---
+
+### `get_feature_vector_dataframe` function documentation
+
+```
+get_feature_vector_dataframe(
+  feature_request: FeatureVectorsRequest,
+  page_size: Optional[int] = None
+) -> pd.DataFrame
+```
+
+Parameters:
+
+- `feature_request`: feature vector request payload (`FeatureVectorsRequest` or dict-like payload)
+- `page_size`: optional page size for transparent pagination; when `None`, sends a single non-paginated request
+
+Pagination behavior when `page_size` is set:
+
+- Pagination is abstracted from the user.
+- The SDK makes multiple backend requests in batches using `page_size`.
+- The function still returns a single pandas DataFrame with all rows concatenated across pages.
+- This batch request behavior via pagination should not be needed in most cases.
+
+---
+
 
 You can identify patients in two ways:
 
@@ -228,12 +315,13 @@ single_feature = CriteriaFilter(
 )
 
 feature_request = FeatureVectorsRequest(
-    cohortQueryResponseXid="cqr_456",  # or pass patientIds=[...]
+    patientIds=["patient_001", "patient_002"]
     features=[single_feature]
 )
 
-feature_response = cohort.create_feature_vectors(feature_request)
+df = cohort.get_feature_vector_dataframe(feature_request)
 ```
+
 
 ## Feature Vector to DataFrame Workflow
 
@@ -260,19 +348,19 @@ combined = cohort.get_feature_vector_dataframe(feature_request)
 #         page_size=100000,
 #     )
 
-code_counts = (
-    combined.groupby("code")
-    .size()
-    .reset_index(name="result_count")
-    .sort_values("result_count", ascending=False)
+print(
+    combined.groupby("conceptCode", as_index=False)["id"]
+    .nunique()
+    .rename(columns={"id": "distinct_ids"})
+    .sort_values("distinct_ids", ascending=False)
+    .head(20)
 )
-print(code_counts.head(10).to_string(index=False))
 ```
 
 Example notebook output:
 
 ```text
-   code  result_count
+  conceptCode  distinct_ids
  4548-4          1284
  1988-5           934
  1751-7           612
@@ -289,11 +377,10 @@ Each item in `featureVectors` includes:
 - `featureValues`: the row data for that feature.
 - `nextPageCursor` (optional): pagination cursor for deep paging on `Observation`, `Medication`, `Procedure`, and `Condition` vectors (`filterType: Order`).
 
-This means your DataFrame schema should come from `featureSchema`, not from assumptions.
-
 ```python
 import pandas as pd
 
+feature_response = cohort.create_feature_vectors(feature_request)
 feature_vector = feature_response["featureVectors"][0]
 schema = feature_vector["featureSchema"]
 rows = feature_vector["featureValues"]
@@ -305,8 +392,7 @@ print(df.head(3))
 
 Native output schema details are provided in the next section.
 
-
-## Filter Options with Examples
+## Criteria Filter Options with Examples
 
 All supported `filterType` values are listed below with a minimal example.
 
@@ -656,12 +742,14 @@ For string matching, the most common operators are `eq`, `contains`, and `starts
 Use `in` to match any value in a list.
 
 ```json
-{ "op": "in", "value": ["%endo%", "endoscopy", "%scope] }
+{ "op": "in", "value": ["%endo%", "endoscopy", "%scope"] }
 
 { "op": "in", "value": ["I10", "E11%", "J44"] }
 ```
 
-## Composition Examples (AND / OR)
+<a id="composition-examples"></a>
+
+## Composition Examples AND OR
 
 Use `CohortQuery` when you want to combine multiple filters.
 
