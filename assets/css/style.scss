@@ -35,7 +35,6 @@ h6,
 .page-header {
   position: relative;
   overflow: hidden;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
   background: linear-gradient(to right bottom, #df01be 0%, #ffaa0f 62%, #ffaa0f 100%) !important;
 }
 
@@ -105,6 +104,10 @@ h6,
   border-color: var(--datma-accent);
   background: rgba(223, 1, 190, 0.2);
   transform: translateY(-1px);
+}
+
+.page-header .btn {
+  display: none;
 }
 
 .main-content {
