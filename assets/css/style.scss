@@ -3,38 +3,171 @@
 
 @import "{{ site.theme }}";
 
-/* DATMA purple */
-$page-header-bg-color: #6d28d9;
-$page-header-bg-color-secondary: #8b5cf6;
+@import url("https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap");
 
-/* Header */
+:root {
+  --datma-black: #111111;
+  --datma-white: #fefefe;
+  --datma-gray: #4a5464;
+  --datma-line: #e7e7e7;
+  --datma-accent: #df01be;
+  --datma-accent-soft: #fbe6f7;
+}
+
+body {
+  color: var(--datma-black);
+  background: var(--datma-white);
+  font-family: "Manrope", "Segoe UI", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.project-name {
+  color: var(--datma-black);
+  font-family: "Epilogue", "Avenir Next", sans-serif;
+  letter-spacing: -0.02em;
+}
+
 .page-header {
-  background-image: linear-gradient(
-    120deg,
-    #6d28d9,
-    #8b5cf6
-  ) !important;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(to right bottom, #df01be 0%, #ffaa0f 62%, #ffaa0f 100%) !important;
 }
 
-/* Links */
-a {
-  color: #6d28d9;
+.page-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    333% 100% at 50% 0%,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 28%,
+    rgba(255, 255, 255, 0.34) 48%,
+    rgba(255, 255, 255, 0.7) 71%,
+    rgba(255, 255, 255, 0.96) 88%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  pointer-events: none;
 }
 
-/* Buttons */
+.project-name,
+.project-tagline {
+  position: relative;
+  z-index: 1;
+}
+
+.project-name {
+  color: #fefefe !important;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 600;
+}
+
+.project-tagline {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: none;
+  margin: 1rem auto 0;
+  color: transparent !important;
+  font-size: 0;
+  font-weight: 500;
+  line-height: 0;
+}
+
+.project-tagline::before {
+  content: "";
+  display: inline-block;
+  width: min(180px, 48vw);
+  aspect-ratio: 1500 / 461;
+  height: auto;
+  background: url("../images/datma-logo-black.webp") center / contain no-repeat;
+}
+
 .btn {
-  border-color: rgba(255,255,255,.4);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 0;
+  color: var(--datma-white);
+  background: rgba(255, 255, 255, 0.04);
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 
-.btn:hover {
-  background-color: rgba(255,255,255,.15);
+.btn:hover,
+.btn:focus {
+  border-color: var(--datma-accent);
+  background: rgba(223, 1, 190, 0.2);
+  transform: translateY(-1px);
 }
 
-/* Code blocks */
+.main-content {
+  max-width: 70rem;
+}
+
+.main-content p,
+.main-content li {
+  color: var(--datma-gray);
+  font-size: 1.03rem;
+  line-height: 1.75;
+}
+
+.main-content h2,
+.main-content h3 {
+  margin-top: 2.5rem;
+  color: var(--datma-black);
+  font-weight: 600;
+}
+
+.main-content h1 {
+  color: var(--datma-black);
+}
+
+.main-content h2 {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--datma-line);
+}
+
+a {
+  color: #b30097;
+  font-weight: 600;
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.15em;
+}
+
+a:hover,
+a:focus {
+  color: var(--datma-accent);
+}
+
 pre {
-  background: #f8fafc;
+  border: 1px solid var(--datma-line);
+  border-radius: 0;
+  background: #fafafa;
 }
 
 code {
-  background: #f5f3ff;
+  color: #a10088;
+  background: var(--datma-accent-soft);
+}
+
+.main-content blockquote {
+  border-left: 4px solid var(--datma-accent);
+  color: #303843;
+}
+
+@media (max-width: 768px) {
+  .project-name {
+    font-size: clamp(1.7rem, 8vw, 2.4rem);
+  }
+
+  .project-tagline::before {
+    width: min(170px, 56vw);
+  }
 }

@@ -1,5 +1,4 @@
-title: Cohort Analysis Developer Docs
-description: Public API/reference documentation
+title: Developer Documentation
 theme: jekyll-theme-cayman
 plugins:
   - jekyll-remote-theme

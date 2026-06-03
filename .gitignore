@@ -1,0 +1,10 @@
+# Local Jekyll/Ruby artifacts
+_site/
+vendor/
+.bundle/
+.jekyll-cache/
+.jekyll-metadata
+
+# Optional local dependency files for preview-only workflows
+Gemfile
+Gemfile.lock

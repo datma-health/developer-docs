@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Cohort Analysis API Reference
 
 Schema version: `0.1.0`.
