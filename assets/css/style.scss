@@ -137,6 +137,44 @@ h6,
   border-bottom: 1px solid var(--datma-line);
 }
 
+.docs-nav {
+  margin: 0.75rem 0 1.6rem;
+}
+
+.docs-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.docs-nav a {
+  display: inline-block;
+  padding: 0.34rem 0.75rem;
+  border: 1px solid var(--datma-line);
+  color: var(--datma-black);
+  text-decoration: none;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: border-color 140ms ease, color 140ms ease, background-color 140ms ease;
+}
+
+.docs-nav a:hover,
+.docs-nav a:focus {
+  border-color: var(--datma-accent);
+  color: var(--datma-accent);
+  background: var(--datma-accent-soft);
+}
+
+.docs-nav a.active {
+  border-color: var(--datma-accent);
+  color: var(--datma-accent);
+  background: var(--datma-accent-soft);
+}
+
 a {
   color: #b30097;
   font-weight: 600;
@@ -222,6 +260,10 @@ code {
 @media (max-width: 768px) {
   .project-name {
     font-size: clamp(1.7rem, 8vw, 2.4rem);
+  }
+
+  .docs-nav a {
+    font-size: 0.82rem;
   }
 
   .project-tagline::before {

@@ -1,0 +1,21 @@
+<nav class="docs-nav" aria-label="Documentation pages">
+  <ul>
+    {% if site.docs_nav and site.docs_nav.size > 0 %}
+      {% for item in site.docs_nav %}
+        {% assign item_url = item.url | relative_url %}
+        {% assign current_url = page.url | relative_url %}
+        <li>
+          <a href="{{ item_url }}"{% if item_url == current_url %} class="active" aria-current="page"{% endif %}>{{ item.title }}</a>
+        </li>
+      {% endfor %}
+    {% else %}
+      {% assign current_url = page.url | relative_url %}
+      <li>
+        <a href="{{ '/' | relative_url }}"{% if current_url == '/' | relative_url %} class="active" aria-current="page"{% endif %}>Definitions</a>
+      </li>
+      <li>
+        <a href="{{ '/cohort-analysis-api-ref/' | relative_url }}"{% if current_url == '/cohort-analysis-api-ref/' | relative_url %} class="active" aria-current="page"{% endif %}>Cohort Analysis API</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>

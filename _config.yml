@@ -2,3 +2,9 @@ title: Developer Documentation
 theme: jekyll-theme-cayman
 plugins:
   - jekyll-remote-theme
+
+docs_nav:
+  - title: Definitions
+    url: /
+  - title: Cohort Analysis API
+    url: /cohort-analysis-api-ref/
