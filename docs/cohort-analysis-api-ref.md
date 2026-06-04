@@ -1,8 +1,12 @@
 ---
 layout: default
+title: Cohort Analysis API
+permalink: /cohort-analysis-api-ref/
 ---
 
-# Cohort Analysis API Reference
+# Cohort Analysis API
+
+{% include docs-nav.html %}
 
 Schema version: `0.1.0`.
 
