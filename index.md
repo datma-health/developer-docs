@@ -375,7 +375,7 @@ Each item in `featureVectors` includes:
 - `featureFilterOrigin`: the filter that produced this vector.
 - `featureSchema`: a map of output column name to type (for example `"id": "str"`, `"dateStart": "datetime"`).
 - `featureValues`: the row data for that feature.
-- `nextPageCursor` (optional): pagination cursor for deep paging on `Observation`, `Medication`, `Procedure`, and `Condition` vectors (`filterType: Order`).
+- `nextPageCursor` (optional): pagination cursor for deep paging on `Specimen` and `Observation`, `Medication`, `Procedure`, and `Condition` vectors (`filterType: Order`). For `Specimen`, `pageAfterKey` is an opaque composite patient UUID/sample ID key and `pageAfterId` is `0`.
 
 ```python
 import pandas as pd
